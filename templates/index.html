@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Detect Ping Pong Balls</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Ping Pong Detection</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="file" accept="image/*">
+            <button type="submit">Upload and Detect</button>
+        </form>
+        <div id="imagesDisplay" class="images-display"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            const imagesDisplay = document.getElementById('imagesDisplay');
+            imagesDisplay.innerHTML = ''; // Clear previous images
+
+            const img = document.createElement('img');
+            img.src = '/' + data.image_path;
+            img.alt = 'Processed Image';
+            imagesDisplay.appendChild(img);
+        });
+    </script>
+</body>
+</html>
