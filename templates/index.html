@@ -3,44 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload and Detect Ping Pong Balls</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Image Upload and Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Ping Pong Detection</h1>
-        <form id="uploadForm" enctype="multipart/form-data">
-            <input type="file" id="fileInput" name="file" accept="image/*">
-            <button type="submit">Upload and Detect</button>
-        </form>
-        <div id="imagesDisplay" class="images-display"></div>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-6">Ping Pong Ball Detection</h1>
+
+        <!-- File Upload Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <form id="uploadForm" enctype="multipart/form-data" class="flex flex-col items-center space-y-4">
+                <label class="block text-lg font-medium text-gray-700">Upload an Image</label>
+                <input type="file" name="file" id="fileInput" class="file-input border p-2 rounded" accept="image/*" required>
+                <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
+                    Upload and Detect
+                </button>
+            </form>
+        </div>
+
+        <!-- Display Results -->
+        <div id="resultContainer" class="mt-8 max-w-md mx-auto hidden">
+            <h2 class="text-2xl font-semibold text-center mb-4">Result</h2>
+            <img id="uploadedImage" class="w-full rounded shadow-md mb-4" alt="Uploaded Image">
+            <img id="processedImage" class="w-full rounded shadow-md" alt="Processed Image">
+        </div>
     </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData();
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
             const fileInput = document.getElementById('fileInput');
-            formData.append('file', fileInput.files[0]);
+            const resultContainer = document.getElementById('resultContainer');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const processedImage = document.getElementById('processedImage');
 
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            const file = fileInput.files[0];
+            if (!file) return;
 
-            if (data.error) {
-                alert(data.error);
-                return;
+            // Create FormData and add the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Fetch the upload route
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.image_path) {
+                    resultContainer.classList.remove('hidden');
+                    uploadedImage.src = URL.createObjectURL(file); // Show uploaded image
+                    processedImage.src = `/${data.image_path}`; // Show processed image
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('An error occurred while uploading the image.');
+                console.error(error);
             }
-
-            const imagesDisplay = document.getElementById('imagesDisplay');
-            imagesDisplay.innerHTML = ''; // Clear previous images
-
-            const img = document.createElement('img');
-            img.src = '/' + data.image_path;
-            img.alt = 'Processed Image';
-            imagesDisplay.appendChild(img);
         });
     </script>
 </body>
