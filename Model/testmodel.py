@@ -1,18 +1,27 @@
 import os
-
 from ultralytics import YOLO
-import cv2
 
-VIDEOS_DOR = os.path.join('.', 'videos')
+model = YOLO("C:\Users\meggs\runs\detect\train9\weights\best.pt")
 
-video_path = os.path.join(VIDEOS_DIR, 'basketball.mp4')
-video_path_out = '{}_out.mp4'.format(video_path)
+image_dir = r'Ping Pong Detection.v3i.yolov\test\images' #Raw String
+output_dir = r'Ping Pong Detection.v3i.yolov11\test\outputs' #r' = raw string
 
-cap = cv2.VideoCapture(video_path)
-ret, frame = cap.read()
-H, W, _ = frame.shape
-out = cv2.VideoWriter(video_path_out, cv2.VideoWriter_fourcc(*'MP4V'), int(cap.get(cv2.CAP_PROP_FPS)), (W, H))
+os.makedirs(output_dir, exist_ok=True)
 
-model.path.join = os.path.join('.', 'models', 'alpaca_detector.pt')
+for filename in os.listdir(image_dir):
+    if filename.lower().endswith(('jpg', '.jpeg', '.png')):
+        image_path = os.path.join(image_dir, filename)
 
-model = YOLO(model_path)
+        results = model(image_path)
+
+        for result in results:
+            masks = result.boxes
+            masks = result.masks
+            keypoints = result.keypoints
+            probs = result.probs
+            obs = result.obb
+
+            result.show()
+
+            output_path = os.path.join(output_dir, filename)
+            result.save(filename=output_path)
