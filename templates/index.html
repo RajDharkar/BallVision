@@ -1,41 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload and Detection</title>
+    <title>Ping Pong Ball Detection</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-6">Ping Pong Ball Detection</h1>
 
-        <!-- File Upload Form -->
-        <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
-            <form id="uploadForm" enctype="multipart/form-data" class="flex flex-col items-center space-y-4">
-                <label class="block text-lg font-medium text-gray-700">Upload an Image</label>
-                <input type="file" name="file" id="fileInput" class="file-input border p-2 rounded" accept="image/*" required>
-                <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
-                    Upload and Detect
-                </button>
-            </form>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    <div class="gradient-bg py-10 text-white">
+        <h1 class="text-5xl font-extrabold text-center mb-4">Ping Pong Ball Detection</h1>
+        <p class="text-center text-lg opacity-80">Upload an image, and our AI will detect the ping pong balls for you!</p>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">
+        <div class="flex flex-wrap justify-center gap-8">
+            <!-- Upload Form 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+                <form id="uploadForm1" enctype="multipart/form-data" class="space-y-4">
+                    <label class="block text-lg font-semibold text-gray-700 text-center">Upload First Image</label>
+                    <input type="file" name="file" id="fileInput1" class="file-input border p-2 rounded w-full" accept="image/*" required>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 w-full transition duration-300">
+                        Upload and Detect
+                    </button>
+                </form>
+            </div>
+
+            <!-- Upload Form 2 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+                <form id="uploadForm2" enctype="multipart/form-data" class="space-y-4">
+                    <label class="block text-lg font-semibold text-gray-700 text-center">Upload Second Image</label>
+                    <input type="file" name="file" id="fileInput2" class="file-input border p-2 rounded w-full" accept="image/*" required>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 w-full transition duration-300">
+                        Upload and Detect
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- Display Results -->
-        <div id="resultContainer" class="mt-8 max-w-md mx-auto hidden">
-            <h2 class="text-2xl font-semibold text-center mb-4">Result</h2>
-            <img id="uploadedImage" class="w-full rounded shadow-md mb-4" alt="Uploaded Image">
-            <img id="processedImage" class="w-full rounded shadow-md" alt="Processed Image">
+        <div id="resultContainer" class="mt-16 max-w-3xl mx-auto hidden">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-700">Detection Results</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold mb-2">Uploaded Image 1</h3>
+                    <img id="uploadedImage1" class="w-full rounded-lg shadow-md mb-4" alt="Uploaded Image 1">
+                    <h3 class="text-lg font-semibold mt-4">Processed Image 1</h3>
+                    <img id="processedImage1" class="w-full rounded-lg shadow-md" alt="Processed Image 1">
+                </div>
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold mb-2">Uploaded Image 2</h3>
+                    <img id="uploadedImage2" class="w-full rounded-lg shadow-md mb-4" alt="Uploaded Image 2">
+                    <h3 class="text-lg font-semibold mt-4">Processed Image 2</h3>
+                    <img id="processedImage2" class="w-full rounded-lg shadow-md" alt="Processed Image 2">
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const fileInput = document.getElementById('fileInput');
+        // Function to handle form submissions
+        async function handleUpload(formId, fileInputId, uploadedImageId, processedImageId) {
+            const fileInput = document.getElementById(fileInputId);
             const resultContainer = document.getElementById('resultContainer');
-            const uploadedImage = document.getElementById('uploadedImage');
-            const processedImage = document.getElementById('processedImage');
+            const uploadedImage = document.getElementById(uploadedImageId);
+            const processedImage = document.getElementById(processedImageId);
 
             const file = fileInput.files[0];
             if (!file) return;
@@ -63,7 +98,19 @@
                 alert('An error occurred while uploading the image.');
                 console.error(error);
             }
+        }
+
+        // Attach submit event listeners to both forms
+        document.getElementById('uploadForm1').addEventListener('submit', function(event) {
+            event.preventDefault();
+            handleUpload('uploadForm1', 'fileInput1', 'uploadedImage1', 'processedImage1');
+        });
+
+        document.getElementById('uploadForm2').addEventListener('submit', function(event) {
+            event.preventDefault();
+            handleUpload('uploadForm2', 'fileInput2', 'uploadedImage2', 'processedImage2');
         });
     </script>
 </body>
+
 </html>

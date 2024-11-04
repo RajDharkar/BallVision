@@ -49,9 +49,11 @@ def upload_file():
         for result in results:
             result.save(filename=output_path)
 
+        url_path = f'outputs/{filename}'
+
         print("Processed image saved to:", output_path)
 
-        return jsonify({'image_path': output_path})
+        return jsonify({'image_path': url_path})
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
